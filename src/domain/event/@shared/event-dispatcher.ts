@@ -2,21 +2,25 @@ import EventDispatcherInterface from "./event-dispatcher.interface";
 import EventHandlerInterface from "./event-handler.interface";
 import EventInterface from "./event.interface";
 
-export default class EventDispatcher<TEventData>
-  implements EventDispatcherInterface<TEventData>
-{
-  private eventHandlers: Record<string, EventHandlerInterface<TEventData>[]> =
-    {};
+export default class EventDispatcher implements EventDispatcherInterface {
+  private eventHandlers: Record<string, EventHandlerInterface[]> = {};
 
-  get getEventHandlers(): Record<string, EventHandlerInterface<TEventData>[]> {
+  get getEventHandlers(): Record<string, EventHandlerInterface[]> {
     return this.eventHandlers;
   }
 
-  notify(event: EventInterface<TEventData>): void {}
+  notify(event: EventInterface): void {
+    const eventName = event.constructor.name;
+    if (this.eventHandlers[eventName]) {
+      this.eventHandlers[eventName].forEach((eventHandler) => {
+        eventHandler.handle(event);
+      });
+    }
+  }
 
   register(
     eventName: string,
-    eventHandler: EventHandlerInterface<TEventData, EventInterface<TEventData>>
+    eventHandler: EventHandlerInterface<EventInterface>
   ): void {
     if (!this.eventHandlers[eventName]) {
       this.eventHandlers[eventName] = [];
@@ -26,7 +30,7 @@ export default class EventDispatcher<TEventData>
 
   unregister(
     eventName: string,
-    eventHandler: EventHandlerInterface<TEventData, EventInterface<TEventData>>
+    eventHandler: EventHandlerInterface<EventInterface>
   ): void {
     if (this.eventHandlers[eventName]) {
       const index = this.eventHandlers[eventName].indexOf(eventHandler);

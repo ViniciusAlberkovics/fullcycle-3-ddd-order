@@ -1,8 +1,7 @@
 import EventInterface from "./event.interface";
 
 export default interface EventHandlerInterface<
-  TEventData,
-  TEventInterface extends EventInterface<TEventData> = EventInterface<TEventData>
+  TEventInterface extends EventInterface = EventInterface
 > {
   handle(event: TEventInterface): void;
 }

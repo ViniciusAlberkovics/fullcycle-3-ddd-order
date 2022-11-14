@@ -1,9 +1,19 @@
 import Address from "../../domain/entity/address";
 import Customer from "../../domain/entity/customer";
+import EventDispatcher from "../../domain/event/@shared/event-dispatcher";
+import CustomerAddressChangedEvent from "../../domain/event/customer/customer-address-changed.event";
+import CustomerCreatedEvent from "../../domain/event/customer/customer-created.event";
 import CustomerRepositoryInterface from "../../domain/repository/customer-repository.interface";
 import CustomerModel from "../db/sequelize/model/customer.model";
 
-export default class CustomerRepository implements CustomerRepositoryInterface {
+export default class CustomerRepository
+  extends EventDispatcher
+  implements CustomerRepositoryInterface
+{
+  constructor() {
+    super();
+  }
+
   async create(entity: Customer): Promise<void> {
     await CustomerModel.create({
       id: entity.id,
@@ -18,6 +28,7 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
       city: entity.address.city,
       complement: entity.address.complement,
     });
+    this.notify(new CustomerCreatedEvent(entity));
   }
 
   async update(entity: Customer): Promise<void> {
@@ -40,6 +51,7 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
         },
       }
     );
+    this.notify(new CustomerAddressChangedEvent(entity));
   }
 
   async find(id: string): Promise<Customer> {
