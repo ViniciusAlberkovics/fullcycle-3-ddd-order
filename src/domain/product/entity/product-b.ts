@@ -5,7 +5,7 @@ type ProductProps = {
   name: string;
 };
 
-export default class Product implements ProductInterface {
+export default class ProductB implements ProductInterface {
   private _id: string;
   private _props: ProductProps;
 
@@ -50,6 +50,6 @@ export default class Product implements ProductInterface {
   }
 
   get price() {
-    return this._props.price;
+    return this._props.price * 2;
   }
 }
